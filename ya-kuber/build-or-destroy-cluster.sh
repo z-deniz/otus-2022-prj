@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # Install yc console
 # curl https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
 # # init yc
