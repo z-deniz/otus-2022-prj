@@ -1,0 +1,16 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: k8sprj-xyz
+spec:
+  acme:
+    email: k8sprjxyz@gmail.com
+    # server: https://acme-staging-v02.api.letsencrypt.org/directory
+    server: https://acme-v02.api.letsencrypt.org/directory
+    preferredChain: "ISRG Root X1"
+    privateKeySecretRef:
+      name: k8sprj-xyz
+    solvers:
+    - http01:
+        ingress:
+          class: nginx
