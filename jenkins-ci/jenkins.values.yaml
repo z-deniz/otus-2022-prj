@@ -1,0 +1,45 @@
+controller:
+  initContainerEnv:
+    - name: TZ
+      value: "Europe/Moscow"
+  containerEnv:
+    - name: TZ
+      value: "Europe/Moscow"
+  installPlugins:
+    - kubernetes
+    - workflow-aggregator
+    - git
+    - configuration-as-code
+    - generic-webhook-trigger
+    - ansible
+    - uno-choice
+    - command-launcher
+    - consul
+    - docker-workflow
+    - hashicorp-vault-pipeline
+    - workflow-aggregator
+    - pipeline-github-lib
+    - timestamper
+    - role-strategy
+    - build-user-vars-plugin
+
+  ingress:
+    enabled: true
+    apiVersion: "networking.k8s.io/v1"
+    annotations:
+      ingress.kubernetes.io/ssl-redirect: "true"
+      kubernetes.io/ingress.class: nginx
+      kubernetes.io/tls-acme: "true"
+      cert-manager.io/cluster-issuer: "k8sprj-xyz"
+      cert-manager.io/acme-challenge-type: http01
+    hostName: ci.k8sprj.xyz
+    tls:
+    - secretName: ci.k8sprj.xyz
+      hosts:
+        - ci.k8sprj.xyz
+
+  prometheus:
+    enabled: true
+
+serviceAccount:
+  create: false
