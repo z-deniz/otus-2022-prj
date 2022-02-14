@@ -1,0 +1,94 @@
+grafana:
+    ingress:
+        enabled: true
+        apiVersion: "networking.k8s.io/v1"
+        annotations:
+          ingress.kubernetes.io/ssl-redirect: "true"
+          kubernetes.io/ingress.class: nginx
+          kubernetes.io/tls-acme: "true"
+          cert-manager.io/cluster-issuer: "k8sprj-xyz"
+          cert-manager.io/acme-challenge-type: http01
+        hostName: grafana.k8sprj.xyz
+        tls:
+        - secretName: grafana.k8sprj.xyz
+        hosts:
+            - grafana.k8sprj.xyz
+    adminPassword: admin
+
+alertmanager:
+  ingress:
+      enabled: true
+      apiVersion: "networking.k8s.io/v1"
+      annotations:
+        ingress.kubernetes.io/ssl-redirect: "true"
+        kubernetes.io/ingress.class: nginx
+        kubernetes.io/tls-acme: "true"
+        cert-manager.io/cluster-issuer: "k8sprj-xyz"
+        cert-manager.io/acme-challenge-type: http01
+      hostName: alert.k8sprj.xyz
+      tls:
+        - secretName: alert.k8sprj.xyz
+      hosts:
+          - alert.k8sprj.xyz
+  config:
+    global:
+      resolve_timeout: 5m
+      slack_api_url: 'https://hooks.slack.com/services/T031J9J05HN/B031W086TDE/{}'
+    route:
+      group_by: ['alertname', 'cluster', 'service']
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 2h
+      receiver: 'default-receiver'
+      routes:
+      - match:
+          alertname: DeadMansSwitch
+        receiver: 'null'
+    inhibit_rules:
+    - source_match:
+        severity: 'critical'
+      target_match:
+        severity: 'warning'
+      equal: ['alertname', 'cluster', 'service']
+    receivers:
+    - name: 'default-receiver'
+      slack_configs:
+      - channel: '#prj'
+        username: 'Grafana-Kube'
+        color: '{{ if eq .Status "firing" }}danger{{ else }}good{{ end }}'
+        title: '[{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}] Prometheus Event Notification'
+        title_link: '{{ template "slack.default.titlelink" . }}'
+        pretext: '{{ .CommonAnnotations.summary }}'
+        text: |-
+          {{ range .Alerts }}
+            {{- if .Annotations.summary }}*Alert:* {{ .Annotations.summary }} - `{{ .Labels.severity }}`{{- end }}
+            *Description:* {{ .Annotations.description }}{{ .Annotations.message }}
+            *Graph:* <{{ .GeneratorURL }}|:chart_with_upwards_trend:>{{ if or .Annotations.runbook .Annotations.runbook_url }} *Runbook:* <{{ .Annotations.runbook }}{{ .Annotations.runbook_url }}|:spiral_note_pad:>{{ end }}
+             *Details:*
+            {{ range .Labels.SortedPairs }} • *{{ .Name }}:* `{{ .Value }}`
+            {{ end }}
+          {{ end }}
+        fallback: '{{ template "slack.default.fallback" . }}'
+        icon_emoji: '{{ template "slack.default.iconemoji" . }}'
+        icon_url: '{{ template "slack.default.iconurl" . }}'
+        send_resolved: true
+    - name: 'null'
+
+prometheus:
+    ingress:
+        enabled: true
+        annotations:
+          ingress.kubernetes.io/ssl-redirect: "true"
+          kubernetes.io/ingress.class: nginx
+          kubernetes.io/tls-acme: "true"
+          cert-manager.io/cluster-issuer: "k8sprj-xyz"
+          cert-manager.io/acme-challenge-type: http01
+        hostName: prom.k8sprj.xyz
+        tls:
+        - secretName: prom.k8sprj.xyz
+        hosts:
+             - prom.k8sprj.xyz
+    prometheusSpec:
+        serviceMonitorSelectorNilUsesHelmValues: false
+        serviceMonitorSelector: {}
+        serviceMonitorNamespaceSelector: {}
