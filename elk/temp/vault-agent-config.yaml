@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vault-agent-config
+  namespace: elk
+data:
+  vault-agent-config.hcl: |
+    exit_after_auth = true
+    pid_file = "/home/vault/pidfile"
+    auto_auth {
+        method "kubernetes" {
+            mount_path = "auth/kubernetes"
+            config = {
+                role = "elk-read"
+            }
+        }
+        sink "file" {
+            config = {
+                path = "/home/vault/.vault-token"
+            }
+        }
+    }
+    template {
+    destination = "/etc/secrets/elk-user"
+    contents = <<EOT
+    {{- with secret "elk/data/users" -}}
+      {{ .Data.data.password }}
+    {{ end }}
+
+    EOT
+    }
+    template {
+    destination = "/etc/secrets/elk-pass"
+    contents = <<EOT
+    {{- with secret "elk/data/users" -}}
+      {{ .Data.data.password }}
+    {{ end }}
+
+    EOT
+    }

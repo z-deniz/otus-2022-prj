@@ -41,5 +41,13 @@ controller:
   prometheus:
     enabled: true
 
+persistence:
+  enabled: true
+  storageClass: yc-network-hdd
+  accessMode: "ReadWriteOnce"
+  size: "8Gi"
+
+
+
 serviceAccount:
   create: false
