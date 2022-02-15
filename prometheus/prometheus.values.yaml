@@ -1,39 +1,44 @@
 grafana:
-    ingress:
-        enabled: true
-        apiVersion: "networking.k8s.io/v1"
-        annotations:
-          ingress.kubernetes.io/ssl-redirect: "true"
-          kubernetes.io/ingress.class: nginx
-          kubernetes.io/tls-acme: "true"
-          cert-manager.io/cluster-issuer: "k8sprj-xyz"
-          cert-manager.io/acme-challenge-type: http01
-        hostName: grafana.k8sprj.xyz
-        tls:
-        - secretName: grafana.k8sprj.xyz
-        hosts:
-            - grafana.k8sprj.xyz
-    adminPassword: admin
+  ingress:
+    enabled: true
+    apiVersion: "networking.k8s.io/v1"
+    hosts:
+      - grafana.k8sprj.xyz
+    annotations:
+      ingress.kubernetes.io/ssl-redirect: "true"
+      kubernetes.io/ingress.class: nginx
+      kubernetes.io/tls-acme: "true"
+      cert-manager.io/cluster-issuer: "k8sprj-xyz"
+      cert-manager.io/acme-challenge-type: http01
+    hostName: grafana.k8sprj.xyz
+    tls:
+    - secretName: grafana.k8sprj.xyz
+      hosts:
+        - grafana.k8sprj.xyz
+adminPassword: admin
 
 alertmanager:
   ingress:
-      enabled: true
-      apiVersion: "networking.k8s.io/v1"
-      annotations:
-        ingress.kubernetes.io/ssl-redirect: "true"
-        kubernetes.io/ingress.class: nginx
-        kubernetes.io/tls-acme: "true"
-        cert-manager.io/cluster-issuer: "k8sprj-xyz"
-        cert-manager.io/acme-challenge-type: http01
-      hostName: alert.k8sprj.xyz
-      tls:
-        - secretName: alert.k8sprj.xyz
-      hosts:
+    enabled: true
+    apiVersion: "networking.k8s.io/v1"
+    hosts:
           - alert.k8sprj.xyz
+    annotations:
+      ingress.kubernetes.io/ssl-redirect: "true"
+      kubernetes.io/ingress.class: nginx
+      kubernetes.io/tls-acme: "true"
+      cert-manager.io/cluster-issuer: "k8sprj-xyz"
+      cert-manager.io/acme-challenge-type: http01
+    hostName: alert.k8sprj.xyz
+    tls:
+     - secretName: alert.k8sprj.xyz
+       hosts:
+       - alert.k8sprj.xyz
+
   config:
     global:
       resolve_timeout: 5m
-      slack_api_url: 'https://hooks.slack.com/services/T031J9J05HN/B031W086TDE/{}'
+      slack_api_url: 'https://hooks.slack.com/services/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'
     route:
       group_by: ['alertname', 'cluster', 'service']
       group_wait: 30s
@@ -75,20 +80,25 @@ alertmanager:
     - name: 'null'
 
 prometheus:
-    ingress:
-        enabled: true
-        annotations:
-          ingress.kubernetes.io/ssl-redirect: "true"
-          kubernetes.io/ingress.class: nginx
-          kubernetes.io/tls-acme: "true"
-          cert-manager.io/cluster-issuer: "k8sprj-xyz"
-          cert-manager.io/acme-challenge-type: http01
-        hostName: prom.k8sprj.xyz
-        tls:
-        - secretName: prom.k8sprj.xyz
-        hosts:
-             - prom.k8sprj.xyz
-    prometheusSpec:
-        serviceMonitorSelectorNilUsesHelmValues: false
-        serviceMonitorSelector: {}
-        serviceMonitorNamespaceSelector: {}
+  ingress:
+    enabled: true
+    apiVersion: "networking.k8s.io/v1"
+    hosts:
+      - prom.k8sprj.xyz
+    paths:
+      - /
+    annotations:
+      ingress.kubernetes.io/ssl-redirect: "true"
+      kubernetes.io/ingress.class: nginx
+      kubernetes.io/tls-acme: "true"
+      cert-manager.io/cluster-issuer: "k8sprj-xyz"
+      cert-manager.io/acme-challenge-type: http01
+    hostName: prom.k8sprj.xyz
+    tls:
+    - secretName: prom.k8sprj.xyz
+      hosts:
+        - prom.k8sprj.xyz
+  prometheusSpec:
+    serviceMonitorSelectorNilUsesHelmValues: false
+    serviceMonitorSelector: {}
+    serviceMonitorNamespaceSelector: {}
