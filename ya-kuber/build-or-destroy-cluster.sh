@@ -20,7 +20,7 @@ export YC_CLOUD_ID=$(yc resource-manager cloud get --name $YC_CLOUD_NAME --forma
 yc resource-manager folder list
 DEFAULT_YC_FOLDER_NAME=$(yc resource-manager folder list --format=json | jq  --raw-output '.[0].name')
 echo "Select folder"
-read -p "Enter cloud name: (Default: $DEFAULT_YC_FOLDER_NAME) " YC_FOLDER_NAME
+read -p "Enter folder name: (Default: $DEFAULT_YC_FOLDER_NAME) " YC_FOLDER_NAME
 if [ -z "$YC_FOLDER_NAME" ]
   then
     YC_FOLDER_NAME=$DEFAULT_YC_FOLDER_NAME
